@@ -2,7 +2,7 @@ name: Automated Random Commit
 
 on:
   schedule:
-    - cron: '0 8-22 * * *'      # Check every day between 8 AM and 10 PM
+    - cron: '0 8-22 * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,26 +12,20 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GH_TOKEN }}
 
     - name: Set up Git
       run: |
         git config --global user.email "hamidsalehi0022@gmail.com"
         git config --global user.name "hamidsalehi02"
 
-    - name: Random Decision (40% chance to commit)
+    - name: Random Decision (40% chance)
       id: random_decision
       run: |
         RAND=$((RANDOM % 100))
-        
         if [ $RAND -lt 40 ]; then
           echo "COMMIT=true" >> $GITHUB_ENV
-          
-          # Random hour between 9 AM and 11 PM
           HOUR=$((RANDOM % 15 + 9))
           echo "RANDOM_HOUR=$HOUR" >> $GITHUB_ENV
-          
           echo "🎲 Today we will commit!"
         else
           echo "COMMIT=false" >> $GITHUB_ENV
@@ -54,5 +48,5 @@ jobs:
         
         git add commit-log.txt
         git commit -m "For You: ${{ env.STICKER }} at ~${{ env.RANDOM_HOUR }}:00"
-        git push
+        git push https://x-access-token:${{ secrets.GH_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
         echo "✅ Commit successful!"
